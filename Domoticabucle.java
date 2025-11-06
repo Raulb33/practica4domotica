@@ -2,6 +2,7 @@ package Practica4;
 
 import java.util.InputMismatchException;
 import java.util.Scanner;
+import java.time.LocalTime;
 
 public class Domoticabucle {
     //Variables llums
@@ -15,8 +16,13 @@ public class Domoticabucle {
     static boolean cameres = false;
     //variable aspersors
     static boolean aspersors = false;
+    // Metodes automatics
+    static boolean modeAutoAspersors = true;
+    static boolean modeAutoCameres = true;
+
   public static void main(String[] args) {
     boolean sortir = false;
+    iniciarSistemaAutomatic();
     while (!sortir) { 
     Scanner p4 = new Scanner(System.in);
      System.out.println("1. Control de Llums");
@@ -45,6 +51,46 @@ public class Domoticabucle {
       }
      }
      }
+     private static void iniciarSistemaAutomatic() {
+        Thread sistema = new Thread(() -> {
+            while (true) {
+                LocalTime hora = LocalTime.now();
+
+                // Aspersors a les 7:00
+                if (hora.getHour() == 7 && hora.getMinute() == 0 && !aspersors) {
+                    aspersors = true;
+                    System.out.println("Els aspersors s'han activat automàticament (07:00)");
+                }
+
+                // Apagar aspersors a les 7:10
+                if (hora.getHour() == 7 && hora.getMinute() == 10 && aspersors) {
+                    aspersors = false;
+                    System.out.println("Els aspersors s'han desactivat automàticament (07:10)");
+                }
+
+                // Activar càmeres a les 22:00
+                if (hora.getHour() == 22 && hora.getMinute() == 0 && !cameres) {
+                    cameres = true;
+                    System.out.println("Les càmeres de seguretat s'han activat automàticament (22:00)");
+                }
+
+                // Apagar càmeres a les 6:00
+                if (hora.getHour() == 6 && hora.getMinute() == 0 && cameres) {
+                    cameres = false;
+                    System.out.println("Les càmeres de seguretat s'han desactivat automàticament (06:00)");
+                }
+
+                try {
+                    Thread.sleep(60000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        sistema.setDaemon(true);
+        sistema.start();
+    }
      //llums
      public static void controlLlums(Scanner p4) {
         boolean sortir = false;
@@ -164,116 +210,95 @@ public class Domoticabucle {
      }
      public static void aireCondicionat(Scanner p4) {
       while (true) {
-      System.out.println("Aire Condicionat");
-      System.out.println("1. Encendre aire condicionat");
-      System.out.println("2. Apagar aire condicionat");
-      System.out.println("3. Estat actual del aire");
-      System.out.println("4. Menú Principal");
-      System.out.println("Escull una opció: ");
-      try {
-      int op = p4.nextInt();
-
-      if (op == 1 && !aire) {
-        aire = true;
-        System.out.println("L'aire s'ha encés");
-      }
-      else if (op == 2 && aire) {
-        aire = false;
-        System.out.println("L'aire s'ha apagat");
-      }
-      else if (op == 3) {
-        mostrarEstatAire(p4);
-      }
-      else if (op == 4) {
-        return;
-      }
-      else {
-        System.out.println("L'aire ja esta encés o apagat o l'Opció no es valida");
-      }
-     } catch (InputMismatchException e) {
-        System.out.println("Error Format no valid utilitza numero valid");
+        System.out.println("\n--- Aire Condicionat ---");
+        System.out.println("1. Encendre");
+        System.out.println("2. Apagar");
+        System.out.println("3. Estat actual");
+        System.out.println("4. Tornar");
+        System.out.print("Escull una opció: ");
+            try {
+            int op = p4.nextInt();
+            switch (op) {
+                case 1 -> { if (!aire) { aire = true; System.out.println("Aire encès."); } else System.out.println("Ja està encès."); }
+                case 2 -> { if (aire) { aire = false; System.out.println("Aire apagat."); } else System.out.println("Ja està apagat."); }
+                case 3 -> System.out.println("Estat: " + (aire ? "Encès" : "Apagat"));
+                case 4 -> { return; }
+                default -> System.out.println("Opció no vàlida.");
+            }
+        } catch (InputMismatchException e) {
+        System.out.println("Format incorrecte.");
         p4.nextLine();
+        }
     }
-  }
-     }
- public static void mostrarEstatAire(Scanner p4) {
-      System.out.println("Estat de l'aire");
-      System.out.println("Aire: " + (aire ? "ences" : "apagat"));
- }
+    }
      public static void cameres(Scanner p4) {
       while (true) {
-      System.out.println("Control de cameres");
-      System.out.println("1. Activar cameres");
-      System.out.println("2. Apagar cameres");
-      System.out.println("3. Mostrar estat Cameres");
-      System.out.println("4. Menú Principal");
-      System.out.println("Escull una opció");
-      try {
-      int op = p4.nextInt();
-
-      if (op == 1 && !cameres) {
-        cameres = true;
-        System.out.println("Les cameres de seguretat s'han activat");
-      }
-      else if (op == 2 && cameres) {
-        cameres = false;
-        System.out.println("Les cameres de seguretat s'han desactivat");
-      }
-      else if (op == 3) {
-        mostrarEstatCameres(p4);
-      }
-      else if (op == 4) {
-        return;
-      }
-      else {
-        System.out.println("Les cameres ja estan activades o desactivades o l'Opcio no valida");
-      }
-     } catch (InputMismatchException e) {
-        System.out.println("Error Format no valid utilitza numero valid");
-        p4.nextLine();
+        System.out.println("\n--- Càmeres de Seguretat ---");
+        System.out.println("1. Activar càmeres");
+        System.out.println("2. Desactivar càmeres");
+        System.out.println("3. Mostrar estat");
+        System.out.println("4. Mode automàtic: " + (modeAutoCameres ? "Activat" : "Desactivat"));
+        System.out.println("5. Tornar");
+        System.out.print("Escull una opció: ");
+        try {
+        int op = p4.nextInt();
+        switch (op) {
+        case 1 -> {  if (cameres) {
+                        System.out.println("Les càmeres ja estan activades.");
+                    } else {
+                        cameres = true;
+                        System.out.println("Les càmeres s'han activat correctament.");
+                    } }
+        case 2 -> { if (!cameres) {
+                        System.out.println("Les càmeres ja estan desactivades.");
+                    } else {
+                        cameres = false;
+                        System.out.println("Les càmeres s'han desactivat correctament.");
+                    } }
+        case 3 -> System.out.println("Estat: " + (cameres ? "Actives" : "Inactives"));
+        case 4 -> { modeAutoCameres = !modeAutoCameres; System.out.println("Mode automàtic càmeres: " + (modeAutoCameres ? "activat" : "desactivat")); }
+        case 5 -> { return; }
+        default -> System.out.println("Opció no vàlida.");
+         }
+        } catch (InputMismatchException e) {
+                System.out.println("Format incorrecte.");
+                p4.nextLine();
+            }
+        }
     }
-  }
-     }
-      public static void mostrarEstatCameres(Scanner p4) {
-      System.out.println("Estat de les cameres");
-      System.out.println("Cameres: " + (cameres ? "ences" : "apagat"));
-      }
      public static void aspersors(Scanner p4) {
       while (true) {
-      System.out.println("Aspersors del jardi");
-      System.out.println("1. Activar aspersors");
-      System.out.println("2. Desactivar aspersors");
-      System .out.println("3. Mostrar estat dels aspersors");
-      System.out.println("4. Menú Principal");
-      System.out.println("Escull una opció: ");
-      try {
-      int op = p4.nextInt();
-
-      if (op == 1 && !aspersors) {
-        aspersors = true;
-        System.out.println("Els aspersors s'han activat");
-      }
-      else if (op == 2 && aspersors) {
-        aspersors = false;
-        System.out.println("Els aspersors s'han desactivat");
-      }
-      else if (op == 3) {
-        mostrarEstatAspersors(p4);
-      }
-      else if (op == 4) {
-        return;
-      }
-      else {
-        System.out.println("Els aspersors estan ences o apagats o l'Opció no valida");
-      }
-     } catch (InputMismatchException e) {
-        System.out.println("Error Format no valid utilitza numero valid");
-        p4.nextLine();
+        System.out.println("\n--- Aspersors del Jardí ---");
+        System.out.println("1. Activar aspersors");
+        System.out.println("2. Desactivar aspersors");
+        System.out.println("3. Mostrar estat");
+        System.out.println("4. Mode automàtic: " + (modeAutoAspersors ? "Activat" : "Desactivat"));
+        System.out.println("5. Tornar");
+        System.out.print("Escull una opció: ");
+        try {
+        int op = p4.nextInt();
+        switch (op) {
+            case 1 -> { if (aspersors) {
+                        System.out.println("Els aspersors ja estan activats.");
+                    } else {
+                        aspersors = true;
+                        System.out.println("Els aspersors s'han activat correctament.");
+                    } }
+            case 2 -> { if (!aspersors) {
+                        System.out.println("Els aspersors ja estan desactivats.");
+                    } else {
+                        aspersors = false;
+                        System.out.println("Els aspersors s'han desactivat correctament.");
+                    } }
+            case 3 -> System.out.println("Estat: " + (aspersors ? "Actius" : "Inactius"));
+            case 4 -> { modeAutoAspersors = !modeAutoAspersors; System.out.println("Mode automàtic aspersors: " + (modeAutoAspersors ? "activat" : "desactivat")); }
+            case 5 -> { return; }
+            default -> System.out.println("Opció no vàlida.");
+        }
+        } catch (InputMismatchException e) {
+            System.out.println("Format incorrecte.");
+            p4.nextLine();
+        }
     }
-  }
-     }
-     public static void mostrarEstatAspersors(Scanner p4) {
-      System.out.println("Estat dels aspersors");
-      System.out.println("Aspersors: " + (aspersors ? "ences" : "apagat"));
 }
 }
