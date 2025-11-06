@@ -171,13 +171,19 @@ public class Domoticabucle {
             }
         }
 
-        if (encendre && !estatAnterior)
-            System.out.println("S'ha encès la llum del " + nom + ".");
-        else if (!encendre && estatAnterior)
-            System.out.println("S'ha apagat la llum del " + nom + ".");
-        else
-            System.out.println("La llum del " + nom + " ja estava " + (encendre ? "encesa." : "apagada."));
+if (encendre && !estatAnterior) {
+    System.out.println("S'ha encès la llum del " + nom + ".");
+} else if (!encendre && estatAnterior) {
+    System.out.println("S'ha apagat la llum del " + nom + ".");
+} else {
+    if (encendre) {
+        System.out.println("La llum del " + nom + " ja estava encesa.");
+    } else {
+        System.out.println("La llum del " + nom + " ja estava apagada.");
+        }
     }
+  }
+
 
      public static void apagaHabitacio(Scanner p4) {
         boolean sortir = false;
@@ -200,14 +206,30 @@ public class Domoticabucle {
      }
     }
     }
-
      public static void mostrarEstatLlums(Scanner p4) {
       System.out.println("Estat de les llums");
-      System.out.println("Menjador: " + (llumMenjador ? "ences" : "apagat"));
-      System.out.println("Cuina: " + (llumCuina ? "encesa" : "apagada"));
-      System.out.println("Habitacio1: " + (Habitacio1 ? "encesa" : "apagada"));
-      System.out.println("Dormitori: " + (Dormitori ? "ences" : "apagat"));
-     }
+    if (llumMenjador) {
+    System.out.println("Menjador: ences");
+    } else {
+    System.out.println("Menjador: apagat");
+    }
+    if (llumCuina) {
+    System.out.println("Cuina: encesa");
+    } else {
+    System.out.println("Cuina: apagada");
+    }
+    if (Habitacio1) {
+    System.out.println("Habitació1: encesa");
+    } else {
+    System.out.println("Habitació1: apagada");
+    }
+    if (Dormitori) {
+    System.out.println("Dormitori: ences");
+    } else {
+    System.out.println("Dormitori: apagat");
+    }
+}
+
      public static void aireCondicionat(Scanner p4) {
       while (true) {
         System.out.println("\n--- Aire Condicionat ---");
@@ -237,7 +259,11 @@ public class Domoticabucle {
         System.out.println("1. Activar càmeres");
         System.out.println("2. Desactivar càmeres");
         System.out.println("3. Mostrar estat");
-        System.out.println("4. Mode automàtic: " + (modeAutoCameres ? "Activat" : "Desactivat"));
+        if (modeAutoCameres) {
+        System.out.println("4. Mode automàtic: Activat");
+        } else {
+        System.out.println("4. Mode automàtic: Desactivat");
+        }
         System.out.println("5. Tornar");
         System.out.print("Escull una opció: ");
         try {
